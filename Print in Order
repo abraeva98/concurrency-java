@@ -1,0 +1,31 @@
+class Foo {
+    boolean firstRun;
+    boolean secondRun;
+
+    public Foo() {
+        firstRun = false;
+        secondRun = false;
+    }
+
+    public synchronized void first(Runnable printFirst) throws InterruptedException {
+        printFirst.run();
+        firstRun = true;
+        notifyAll();
+    }
+
+    public synchronized void second(Runnable printSecond) throws InterruptedException {
+        while(!firstRun) {
+            wait();
+        } 
+        printSecond.run();
+        secondRun = true;
+        notifyAll();
+    }
+
+    public synchronized void third(Runnable printThird) throws InterruptedException {
+        while(!secondRun) {
+            wait();
+        }
+        printThird.run();
+    }
+}
