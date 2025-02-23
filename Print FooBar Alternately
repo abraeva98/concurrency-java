@@ -1,0 +1,32 @@
+class FooBar {
+    private int n;
+    private AtomicInteger count;
+
+    public FooBar(int n) {
+        this.n = n;
+        count = new AtomicInteger(0);
+    }
+
+    public synchronized void foo(Runnable printFoo) throws InterruptedException {      
+        for (int i = 0; i < n; i++) {
+            while(count.get() % 2 != 0) {
+                wait();
+            }
+            printFoo.run();
+            count.incrementAndGet();
+            notifyAll();
+        }
+    }
+
+    public synchronized void bar(Runnable printBar) throws InterruptedException {
+        
+        for (int i = 0; i < n; i++) {
+            while(count.get() % 2 == 0) {
+                wait();
+            }
+            printBar.run();
+            count.incrementAndGet();
+            notifyAll();
+        }
+    }
+}
