@@ -1,0 +1,53 @@
+class ZeroEvenOdd {
+    private int n;
+    private int x;
+    private int state;
+    
+    public ZeroEvenOdd(int n) {
+        this.n = n;
+        x = 1;
+        state = 0;
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer.
+    public synchronized void zero(IntConsumer printNumber) throws InterruptedException {
+        while(x <= n) {
+            while(state != 0) {
+                wait();
+                if (x > n) return; 
+            }
+
+            printNumber.accept(0);
+            state = x % 2 == 0 ? 2 : 1;
+            notifyAll();
+        }
+    }
+
+    public synchronized void even(IntConsumer printNumber) throws InterruptedException {
+        while(x <= n) {
+            while(state != 2) {
+                wait();
+                if (x > n) return; 
+            }
+
+            printNumber.accept(x);
+            x += 1;
+            state = 0;
+            notifyAll();
+        }       
+    }
+
+    public synchronized void odd(IntConsumer printNumber) throws InterruptedException {
+        while(x <= n) {
+            while(state != 1) {
+                wait();
+                if (x > n) return; 
+            }
+
+            printNumber.accept(x);
+            x += 1;
+            state = 0;
+            notifyAll();
+        }        
+    }
+}
